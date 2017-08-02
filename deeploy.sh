@@ -29,11 +29,17 @@ shift
 done
 
 
-
+touch "$IGNOREFILE_NAME"
 touch "$FILE_SOURCE"
 source $FILE_SOURCE
 
 
+if test "$SSH_SERVER" == ""
+then
+	echo "Informe o endereço ou o nome de rede do seu servidor de deploy: "
+	read SSH_SERVER
+	echo "SSH_SERVER=$SSH_SERVER" >> "$FILE_SOURCE"
+fi
 if test "$SSH_USER" == ""
 then
 	echo "Informe o usuário de ssh para o deploy: "
@@ -50,6 +56,7 @@ if test "$SERVER" == ""
 then
 	echo "Informe o path do seu server: "
 	read SERVER
+	SERVER="$SSH_USER@$SSH_SERVER:$SERVER"
 	echo  "SERVER=$SERVER" >> "$FILE_SOURCE"
 fi
 
@@ -57,7 +64,7 @@ if [ "$CLIENT" == "" ]
 then
 	echo "Informe o path client do deploy: "
 	read CLIENT
-	CLIENT="$SSH_USER@$CLIENT"
+	CLIENT="$CLIENT"
 	echo  "CLIENT=$CLIENT" >> "$FILE_SOURCE"
 fi
 
