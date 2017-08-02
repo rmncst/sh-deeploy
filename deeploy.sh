@@ -32,10 +32,20 @@ done
 
 touch "$FILE_SOURCE"
 source $FILE_SOURCE
-SSH_PORT=4840
-SSH_USER="deploy"
 
 
+if test "$SSH_USER" == ""
+then
+	echo "Informe o usuário de ssh para o deploy: "
+	read SSH_USER
+	echo "SSH_USER=$SSH_USER" >> "$FILE_SOURCE"
+fi
+if test "$SSH_PORT" == ""
+then
+	echo "Informe a porta do servidor SSH: "
+	read SSH_PORT
+	echo "SSH_PORT=$SSH_PORT" >> "$FILE_SOURCE"
+fi
 if test "$SERVER" == "" 
 then
 	echo "Informe o path do seu server: "
@@ -47,6 +57,7 @@ if [ "$CLIENT" == "" ]
 then
 	echo "Informe o path client do deploy: "
 	read CLIENT
+	CLIENT="$SSH_USER@$CLIENT"
 	echo  "CLIENT=$CLIENT" >> "$FILE_SOURCE"
 fi
 
@@ -54,7 +65,8 @@ fi
 echo "Deeploy Package !!! "
 echo "Origem dos arquivos   ...... : $CLIENT"
 echo "Destino dos arquivos  ...... : $SERVER"
-echo "SSH PORT.....................: $SSH_PORT"
+echo "SSH Porta....................: $SSH_PORT"
+echo "SSH User.....................: $SSH_USER"
 
 rsync -Cavz -e "ssh -p $SSH_PORT" --exclude-from="$IGNOREFILE_NAME" "$CLIENT" "$SERVER"
 
